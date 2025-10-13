@@ -1,0 +1,20 @@
+{
+  "name": "full-project",
+  "version": "1.0.0",
+  "description": "full level project management application",
+  "main": "script.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node script.js"
+  },
+  "keywords": [
+    "backend",
+    "API",
+    "creation"
+  ],
+  "author": "Akhil Barige",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "3.6.2"
+  }
+}
