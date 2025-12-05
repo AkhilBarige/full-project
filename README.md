@@ -140,7 +140,7 @@ npm run dev
 ---
 
 ## 🌐 Live Demo
-- 🔗 **Frontend (Next.js + TailwindCSS)**: [Live on Vercel](https://your-frontend-demo.vercel.app)
-- 🔗 **Backend (Express + MongoDB)**: [Live on Render](https://your-backend-demo.onrender.com)
+- 🔗 **Frontend (Next.js + TailwindCSS)**: [Live on Vercel](https://full-project-steel.vercel.app/)
+- 🔗 **Backend (Express + MongoDB)**: [Live on Render](https://task-manager-api-2d9v.onrender.com)
 
 ---
