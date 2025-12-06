@@ -30,14 +30,12 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User already exists");
     }
 
-    // bcrypt only (model pre-save hook will hash again if needed)
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    // ❌ Don't hash here — let pre-save hook handle it
     const user = await User.create({
         email,
         username,
         fullName,
-        password: hashedPassword,
+        password, // plain password, will be hashed by pre-save hook
     });
 
     const accessToken = generateAccessToken(user);
@@ -49,15 +47,13 @@ const registerUser = asyncHandler(async (req, res) => {
         fullName: user.fullName,
     };
 
-    return res
-        .status(201)
-        .json(
-            new ApiResponse(
-                201,
-                { user: safeUser, accessToken },
-                "User registered successfully"
-            )
-        );
+    return res.status(201).json(
+        new ApiResponse(
+            201,
+            { user: safeUser, accessToken },
+            "User registered successfully"
+        )
+    );
 });
 
 // 🔐 LOGIN
