@@ -55,7 +55,7 @@ export const login = async (
 ): Promise<{ accessToken: string; user: any }> => {
     try {
         const res = await api.post("/auth/login", { email, password });
-        return res.data.data;
+        return res.data.data; // ✅ correct, matches backend
     } catch (err: any) {
         throw err.response?.data || { message: "Login failed" };
     }

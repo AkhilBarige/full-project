@@ -6,12 +6,17 @@ export const api = axios.create({
     withCredentials: true,
 });
 
-// Request interceptor → attach token
+// Request interceptor → attach token only for protected routes
 api.interceptors.request.use(
     (config) => {
         if (typeof window !== "undefined") {
             const token = getToken(); // ✅ use helper
-            if (token) {
+            // ✅ Skip attaching token for login/signup routes
+            if (
+                token &&
+                !config.url?.includes("/auth/login") &&
+                !config.url?.includes("/auth/signup")
+            ) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
         }
