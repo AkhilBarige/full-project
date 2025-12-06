@@ -1,13 +1,10 @@
 class ApiResponse {
-    constructor(statuscode, data, message = "Sucess") {
-        this.statuscode = statuscode
-        this.data = data
-        this.message = message
-        this.sucess = statuscode < 400
+    constructor(statusCode, data, message = "Success") {
+        this.statusCode = statusCode;   // ✅ fixed casing
+        this.data = data;
+        this.message = message;
+        this.success = statusCode < 400; // ✅ fixed typo: was "sucess"
     }
-
 }
 
-
-
-export { ApiResponse }
+export { ApiResponse };

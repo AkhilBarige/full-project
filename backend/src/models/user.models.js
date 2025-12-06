@@ -31,7 +31,6 @@ const userSchema = new Schema(
         },
         fullName: {
             type: String,
-            required: false,
             trim: true,
         },
         password: {
@@ -44,20 +43,24 @@ const userSchema = new Schema(
     { timestamps: true }
 );
 
-// Hash password before saving (bcrypt only)
+// 🔒 Hash password before saving
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });
 
-// Compare password (bcrypt only)
+// 🔑 Compare password
 userSchema.methods.isPasswordCorrect = async function (password) {
-    return await bcrypt.compare(password, this.password);
+    return bcrypt.compare(password, this.password);
 };
 
-// Generate JWT access token
+// 🎟️ Generate JWT access token
 userSchema.methods.generateAccessToken = function () {
+    if (!process.env.ACCESS_TOKEN_SECRET) {
+        throw new Error("ACCESS_TOKEN_SECRET not configured");
+    }
+
     return jwt.sign(
         {
             _id: this._id,

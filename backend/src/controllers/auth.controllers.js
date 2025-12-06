@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/async-handler.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-// Helper to generate JWT
+// 🔑 Helper to generate JWT
 const generateAccessToken = (user) => {
     if (!process.env.ACCESS_TOKEN_SECRET) {
         throw new ApiError(500, "JWT secret not configured");
@@ -17,7 +17,7 @@ const generateAccessToken = (user) => {
     );
 };
 
-// REGISTER (Signup)
+// 📝 REGISTER (Signup)
 const registerUser = asyncHandler(async (req, res) => {
     const { email, username, password, fullName } = req.body;
 
@@ -30,7 +30,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User already exists");
     }
 
-    // bcrypt only
+    // bcrypt only (model pre-save hook will hash again if needed)
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -51,12 +51,17 @@ const registerUser = asyncHandler(async (req, res) => {
 
     return res
         .status(201)
-        .json(new ApiResponse(201, { user: safeUser, accessToken }, "User registered successfully"));
+        .json(
+            new ApiResponse(
+                201,
+                { user: safeUser, accessToken },
+                "User registered successfully"
+            )
+        );
 });
 
-// LOGIN
+// 🔐 LOGIN
 const login = asyncHandler(async (req, res) => {
-    console.log(req.body)
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -80,23 +85,29 @@ const login = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(200, { user: safeUser, accessToken }, "Login successful"));
+        .json(
+            new ApiResponse(200, { user: safeUser, accessToken }, "Login successful")
+        );
 });
 
-// LOGOUT
-const logout = asyncHandler(async (req, res) => {
-    return res.status(200).json(new ApiResponse(200, {}, "User logged out successfully"));
+// 🚪 LOGOUT
+const logout = asyncHandler(async (_req, res) => {
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
-// GET CURRENT USER
+// 👤 GET CURRENT USER
 const getCurrentUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id).select("-password");
     if (!user) throw new ApiError(404, "User not found");
 
-    return res.status(200).json(new ApiResponse(200, user, "Current user fetched successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "Current user fetched successfully"));
 });
 
-// CHANGE PASSWORD
+// 🔒 CHANGE PASSWORD
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
 
@@ -113,7 +124,9 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
 
-    return res.status(200).json(new ApiResponse(200, {}, "Password changed successfully"));
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Password changed successfully"));
 });
 
 export {

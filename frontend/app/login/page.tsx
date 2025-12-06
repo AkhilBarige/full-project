@@ -8,7 +8,10 @@ import { saveToken } from "../../lib/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Alert from "../../components/Alert";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
 
+// Validation schema
 const schema = z.object({
     email: z.string().email("Enter a valid email"),
     password: z.string().min(6, "Password must be at least 6 characters"),
@@ -62,50 +65,47 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-700 text-white">
+        <div className="flex items-center justify-center min-h-screen bg-gray-900 text-gray-100">
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="bg-gray-800 p-6 rounded-lg shadow-md w-96 space-y-4"
+                className="bg-gray-800 p-6 rounded-lg shadow-md w-96 space-y-4 section-fade"
             >
-                <h1 className="text-2xl font-bold text-center">Login</h1>
+                <h1 className="text-2xl font-semibold text-center">Login</h1>
 
-                {/* Alerts using reusable component */}
+                {/* Alerts */}
                 {errorMessage && <Alert type="error" message={errorMessage} />}
                 {successMessage && <Alert type="success" message={successMessage} />}
 
-                <div>
-                    <input
-                        {...register("email")}
-                        placeholder="Email"
-                        className="w-full bg-gray-900 text-white border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    />
-                    {errors.email && (
-                        <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
-                    )}
-                </div>
+                {/* Inputs */}
+                <Input
+                    {...register("email")}
+                    placeholder="Email"
+                    error={errors.email?.message}
+                />
+                <Input
+                    {...register("password")}
+                    type="password"
+                    placeholder="Password"
+                    error={errors.password?.message}
+                />
 
-                <div>
-                    <input
-                        {...register("password")}
-                        type="password"
-                        placeholder="Password"
-                        className="w-full bg-gray-900 text-white border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    />
-                    {errors.password && (
-                        <p className="text-red-400 text-sm mt-1">{errors.password.message}</p>
-                    )}
-                </div>
-
-                <button
+                {/* Button */}
+                <Button
                     type="submit"
                     disabled={loading}
-                    className={`w-full p-2 rounded transition ${loading
-                        ? "bg-gray-500 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700"
-                        }`}
+                    className="w-full"
+                    variant={loading ? "outline" : "default"}
                 >
                     {loading ? "Logging in..." : "Login"}
-                </button>
+                </Button>
+
+                {/* Signup link */}
+                <div className="text-center mt-4 text-sm text-gray-400">
+                    New here?{" "}
+                    <a href="/signup" className="text-blue-400 hover:underline">
+                        Sign up first
+                    </a>
+                </div>
             </form>
         </div>
     );

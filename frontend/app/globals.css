@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
+/* 🌍 Theme variables */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --accent: #2d2d2d;
+  /* soft dark gray */
+  --accent-hover: #3a3a3a;
+  /* slightly lighter hover */
+  --border: #e5e5e5;
+  /* subtle gray border */
 }
 
 @theme inline {
@@ -16,11 +23,102 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --accent: #1f1f1f;
+    --accent-hover: #2a2a2a;
+    --border: #2d2d2d;
   }
 }
 
+/* 🖼️ Base styles */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+  @apply antialiased transition-colors duration-300 ease-in-out;
+}
+
+/* 🔗 Links */
+a {
+  color: var(--foreground);
+  @apply transition-colors duration-300 ease-in-out;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+/* ✨ Button hover (subtle grayscale spotlight) */
+.hover-spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(400px 150px at var(--mx) var(--my), rgba(255, 255, 255, 0.08), transparent 40%);
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+
+.hover-spotlight:hover::after {
+  opacity: 1;
+}
+
+/* 🌀 Section fade-in */
+.section-fade {
+  @apply opacity-0 translate-y-4;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🖼️ Card hover lift */
+.card-hover {
+  @apply transition-transform duration-300 ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* 🔘 Focus rings */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 🌈 Scrollbar styling (cool gray) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+}
+
+.card-hover {
+  @apply transition-transform duration-300 ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }

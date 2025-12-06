@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-// Registration validator
+// 📝 Registration validator
 const userRegisterValidator = () => [
     body("email")
         .trim()
@@ -13,13 +13,14 @@ const userRegisterValidator = () => [
         .isLength({ min: 4 }).withMessage("Username must be at least 4 characters"),
     body("password")
         .trim()
-        .notEmpty().withMessage("Password is required"),
+        .notEmpty().withMessage("Password is required")
+        .isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
     body("fullName")
         .trim()
         .notEmpty().withMessage("Full name is required"),
 ];
 
-// Login validator
+// 🔐 Login validator
 const userLoginValidator = () => [
     body("email")
         .trim()
@@ -30,22 +31,23 @@ const userLoginValidator = () => [
         .notEmpty().withMessage("Password is required"),
 ];
 
-// Change current password validator
+// 🔒 Change current password validator
 const userChangeCurrentPasswordValidator = () => [
     body("oldPassword")
         .notEmpty().withMessage("Old password is required"),
     body("newPassword")
-        .notEmpty().withMessage("New password is required"),
+        .notEmpty().withMessage("New password is required")
+        .isLength({ min: 6 }).withMessage("New password must be at least 6 characters"),
 ];
 
-// Forgot password validator
+// 📧 Forgot password validator
 const userForgotPasswordValidator = () => [
     body("email")
         .notEmpty().withMessage("Email is required")
         .isEmail().withMessage("Invalid email"),
 ];
 
-// Reset forgotten password validator
+// 🔑 Reset forgotten password validator
 const userResetPasswordValidator = () => [
     body("newPassword")
         .notEmpty().withMessage("New password is required")

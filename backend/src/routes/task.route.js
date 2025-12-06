@@ -1,19 +1,20 @@
-import express from "express";
+import { Router } from "express";
 import { body } from "express-validator";
 import {
     createTask,
     getTasks,
     updateTask,
     deleteTask,
-} from "../controllers/task.controller.js";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { validate } from "../middlewares/validator.middleware.js";
+} from "../controllers/task.controllers.js"; // ✅ plural consistency
+import { verifyJWT } from "../middleware/auth.js"; // ✅ consistent naming
+import { validate } from "../middleware/validate.js"; // ✅ consistent naming
 
-const router = express.Router();
+const router = Router();
 
+// 🔒 All task routes require authentication
 router.use(verifyJWT);
 
-// Create task
+// 📝 Create task
 router.post(
     "/",
     [
@@ -26,18 +27,50 @@ router.post(
             .optional()
             .isString()
             .withMessage("Description must be a string"),
+        body("status")
+            .optional()
+            .isIn(["todo", "in_progress", "done"])
+            .withMessage("Status must be one of: todo, in_progress, done"),
+        body("dueDate")
+            .optional()
+            .isISO8601()
+            .toDate()
+            .withMessage("Due date must be a valid date"),
     ],
     validate,
     createTask
 );
 
-// Get all tasks
+// 📋 Get all tasks
 router.get("/", getTasks);
 
-// Update task by ID
-router.put("/:id", updateTask);
+// ✏️ Update task by ID
+router.put(
+    "/:id",
+    [
+        body("title")
+            .optional()
+            .isString()
+            .withMessage("Title must be a string"),
+        body("description")
+            .optional()
+            .isString()
+            .withMessage("Description must be a string"),
+        body("status")
+            .optional()
+            .isIn(["todo", "in_progress", "done"])
+            .withMessage("Status must be one of: todo, in_progress, done"),
+        body("dueDate")
+            .optional()
+            .isISO8601()
+            .toDate()
+            .withMessage("Due date must be a valid date"),
+    ],
+    validate,
+    updateTask
+);
 
-// Delete task by ID
+// 🗑️ Delete task by ID
 router.delete("/:id", deleteTask);
 
 export default router;

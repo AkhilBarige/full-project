@@ -1,0 +1,49 @@
+import { Task } from "../models/task.models.js";
+import { asyncHandler } from "../utils/async-handler.js";
+import { ApiError } from "../utils/api-error.js";
+import { ApiResponse } from "../utils/api-response.js";
+
+// 📝 Create task
+export const createTask = asyncHandler(async (req, res) => {
+    const { title, description, status, dueDate } = req.body;
+
+    if (!title) throw new ApiError(400, "Title is required");
+
+    const task = await Task.create({
+        title,
+        description,
+        status,
+        dueDate,
+        owner: req.user._id, // ✅ matches Task model
+    });
+
+    return res.status(201).json(new ApiResponse(201, task, "Task created successfully"));
+});
+
+// 📋 Get all tasks for logged-in user
+export const getTasks = asyncHandler(async (req, res) => {
+    const tasks = await Task.find({ owner: req.user._id }).sort({ createdAt: -1 });
+    return res.status(200).json(new ApiResponse(200, tasks, "Tasks fetched successfully"));
+});
+
+// ✏️ Update task by ID
+export const updateTask = asyncHandler(async (req, res) => {
+    const task = await Task.findOneAndUpdate(
+        { _id: req.params.id, owner: req.user._id },
+        { $set: req.body },
+        { new: true }
+    );
+
+    if (!task) throw new ApiError(404, "Task not found or not owned by user");
+
+    return res.status(200).json(new ApiResponse(200, task, "Task updated successfully"));
+});
+
+// 🗑️ Delete task by ID
+export const deleteTask = asyncHandler(async (req, res) => {
+    const task = await Task.findOneAndDelete({ _id: req.params.id, owner: req.user._id });
+
+    if (!task) throw new ApiError(404, "Task not found or not owned by user");
+
+    return res.status(200).json(new ApiResponse(200, {}, "Task deleted successfully"));
+});

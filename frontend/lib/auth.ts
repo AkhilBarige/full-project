@@ -1,46 +1,34 @@
-// // Save token to localStorage
-// export const saveToken = (token: string): void => {
-//     if (typeof window !== "undefined" && token) {
-//         localStorage.setItem("accessToken", token); // ✅ consistent key
-//     }
-// };
+import { api } from "./api"; // ✅ axios instance
 
-// // Retrieve token from localStorage
-// export const getToken = (): string | null => {
-//     if (typeof window !== "undefined") {
-//         return localStorage.getItem("accessToken"); // ✅ same key
-//     }
-//     return null; // return null on server
-// };
-
-// // Clear token from localStorage
-// export const clearToken = (): void => {
-//     if (typeof window !== "undefined") {
-//         localStorage.removeItem("accessToken"); // ✅ same key
-//     }
-// };
-
-import { api } from "./api"; // your axios instance
+const TOKEN_KEY = "accessToken"; // centralized key
 
 // Save token to localStorage
 export const saveToken = (token: string): void => {
     if (typeof window !== "undefined" && token) {
-        localStorage.setItem("accessToken", token); // ✅ consistent key
+        localStorage.setItem(TOKEN_KEY, token);
     }
 };
 
 // Retrieve token from localStorage
 export const getToken = (): string | null => {
     if (typeof window !== "undefined") {
-        return localStorage.getItem("accessToken"); // ✅ same key
+        return localStorage.getItem(TOKEN_KEY);
     }
-    return null; // return null on server
+    return null;
 };
 
 // Clear token from localStorage
 export const clearToken = (): void => {
     if (typeof window !== "undefined") {
-        localStorage.removeItem("accessToken"); // ✅ same key
+        localStorage.removeItem(TOKEN_KEY);
+    }
+};
+
+// ✅ Logout helper
+export const logout = (): void => {
+    if (typeof window !== "undefined") {
+        clearToken();
+        window.location.href = "/login"; // redirect to login page
     }
 };
 
@@ -48,7 +36,7 @@ export const clearToken = (): void => {
 export const changePassword = async (
     oldPassword: string,
     newPassword: string
-): Promise<any> => {
+): Promise<{ message: string }> => {
     try {
         const res = await api.post("/auth/change-password", {
             oldPassword,
@@ -57,5 +45,32 @@ export const changePassword = async (
         return res.data;
     } catch (err: any) {
         throw err.response?.data || { message: "Error changing password" };
+    }
+};
+
+// Optional: Login API call
+export const login = async (
+    email: string,
+    password: string
+): Promise<{ accessToken: string; user: any }> => {
+    try {
+        const res = await api.post("/auth/login", { email, password });
+        return res.data.data;
+    } catch (err: any) {
+        throw err.response?.data || { message: "Login failed" };
+    }
+};
+
+// Optional: Signup API call
+export const signup = async (
+    email: string,
+    password: string,
+    username: string
+): Promise<{ message: string }> => {
+    try {
+        const res = await api.post("/auth/signup", { email, password, username });
+        return res.data;
+    } catch (err: any) {
+        throw err.response?.data || { message: "Signup failed" };
     }
 };

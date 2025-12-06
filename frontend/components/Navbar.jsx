@@ -4,14 +4,20 @@ import Link from "next/link";
 import { clearToken, getToken } from "../lib/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Button from "@/components/Button"; // ✅ reusable Button
 
 export default function Navbar() {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
         const token = getToken();
         setIsLoggedIn(!!token);
+
+        const handleScroll = () => setScrolled(window.scrollY > 10);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     const handleLogout = () => {
@@ -21,37 +27,52 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="bg-gray-400 text-black px-6 py-4 flex items-center justify-between shadow-md">
+        <nav
+            className={`fixed top-0 w-full z-50 px-6 py-4 flex items-center justify-between backdrop-blur-md transition-shadow duration-300 ${scrolled ? "shadow-md bg-gray-900/80" : "bg-gray-900/60"
+                }`}
+        >
             {/* Left side: Logo */}
-            <div className="text-2xl font-bold">
-                <Link href="/" className="hover:scale-110 transform transition duration-200">
+            <div className="text-xl font-semibold tracking-tight text-white">
+                <Link href="/" className="hover:opacity-80 transition-opacity duration-200">
                     MyApp
                 </Link>
             </div>
 
             {/* Middle: Nav links */}
-            <div className="flex gap-10 text-xl font-bold">
-                <Link href="/" className="hover:scale-110 transform transition duration-200">Home</Link>
-                <Link href="/dashboard" className="hover:scale-110 transform transition duration-200">Dashboard</Link>
-                <Link href="/tasks" className="hover:scale-110 transform transition duration-200">Tasks</Link>
-                <Link href="/about" className="hover:scale-110 transform transition duration-200">About</Link>
-                <Link href="/contact" className="hover:scale-110 transform transition duration-200">Contact</Link>
+            <div className="flex gap-8 text-sm font-medium text-gray-200">
+                {["Home", "Dashboard", "Tasks", "Profile", "About", "Contact"].map((item) => (
+                    <Link
+                        key={item}
+                        href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+                        className="relative group"
+                    >
+                        <span className="transition-colors duration-200 group-hover:text-white">
+                            {item}
+                        </span>
+                        <span className="absolute left-0 -bottom-1 w-full h-[1px] bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                    </Link>
+                ))}
             </div>
 
             {/* Right side: Auth buttons */}
-            <div className="flex gap-6 font-bold">
+            <div className="flex gap-4">
                 {!isLoggedIn ? (
                     <>
-                        <Link href="/login" className="hover:scale-110 transform transition duration-200">Login</Link>
-                        <Link href="/signup" className="hover:scale-110 transform transition duration-200">Signup</Link>
+                        <Link href="/login">
+                            <Button variant="outline" size="sm">Login</Button>
+                        </Link>
+                        <Link href="/signup">
+                            <Button variant="default" size="sm">Signup</Button>
+                        </Link>
                     </>
                 ) : (
-                    <button
+                    <Button
                         onClick={handleLogout}
-                        className="bg-gray-600 text-white text-xl px-4 py-2 rounded hover:bg-gray-800 transform hover:scale-105 transition duration-200"
+                        variant="default"
+                        size="sm"
                     >
                         Logout
-                    </button>
+                    </Button>
                 )}
             </div>
         </nav>

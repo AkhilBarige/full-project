@@ -9,12 +9,12 @@ export const validate = (req, res, next) => {
     }
 
     // Collect errors in a structured way
-    const extractedErrors = errors.array().map(err => ({
+    const extractedErrors = errors.array().map((err) => ({
         field: err.path,
         message: err.msg,
     }));
 
-    // Respond with 400 instead of throwing
+    // Respond with 400 Bad Request
     return res.status(400).json(
         new ApiResponse(400, extractedErrors, "Validation failed")
     );

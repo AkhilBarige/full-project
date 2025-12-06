@@ -1,47 +1,78 @@
 "use client";
+
 import { useState } from "react";
 import { changePassword } from "../lib/auth";
+import Button from "./Button";   // ✅ use reusable Button
+import Input from "./Input";     // ✅ use reusable Input
+import Alert from "./Alert";     // ✅ for success/error messages
 
 interface ChangePasswordFormProps {
-    token?: string | null; // make token optional if you rely on interceptor
+    token?: string | null; // optional if interceptor handles auth
 }
 
 export default function ChangePasswordForm({ token }: ChangePasswordFormProps) {
-    const [oldPassword, setOldPassword] = useState<string>("");
-    const [newPassword, setNewPassword] = useState<string>("");
-    const [message, setMessage] = useState<string>("");
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setMessage("");
+        setError("");
+
+        if (newPassword !== confirmPassword) {
+            setError("New password and confirmation do not match.");
+            return;
+        }
+
         try {
-            // If your changePassword in auth.ts doesn't accept token, remove it here
+            setLoading(true);
             const res = await changePassword(oldPassword, newPassword);
-            setMessage(res.message || "Password changed successfully");
+            setMessage(res.message || "Password changed successfully!");
         } catch (err: any) {
-            setMessage(err.message || "Failed to change password");
+            setError(err.message || "Failed to change password.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <input
+            {error && <Alert type="error" message={error} />}
+            {message && <Alert type="success" message={message} />}
+
+            <Input
                 type="password"
                 placeholder="Old Password"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
-                className="border p-2 w-full"
             />
-            <input
+
+            <Input
                 type="password"
                 placeholder="New Password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="border p-2 w-full"
             />
-            <button type="submit" className="bg-blue-600 text-white px-4 py-2">
-                Change Password
-            </button>
-            {message && <p>{message}</p>}
+
+            <Input
+                type="password"
+                placeholder="Confirm New Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+
+            <Button
+                type="submit"
+                disabled={loading}
+                className="w-full"
+                variant={loading ? "outline" : "default"}
+            >
+                {loading ? "Changing..." : "Change Password"}
+            </Button>
         </form>
     );
 }

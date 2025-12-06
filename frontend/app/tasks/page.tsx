@@ -5,7 +5,9 @@ import { api } from "../../lib/api";
 import { useRouter } from "next/navigation";
 import { getToken } from "../../lib/auth";
 import { useState } from "react";
-import Alert from "../../components/Alert"; // adjust path if needed
+import Alert from "../../components/Alert";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
 
 type TaskFormData = {
     title: string;
@@ -26,23 +28,20 @@ export default function TasksPage() {
         setSuccessMessage("");
         try {
             const token = getToken();
-
             if (!token) {
-                console.warn("No token found, redirecting to login...");
                 router.push("/login");
                 return;
             }
 
-            console.log("Token being sent:", token);
-
             await api.post("/tasks", data, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
 
             setSuccessMessage("✅ Task created successfully!");
             reset();
+
+            // Redirect back to dashboard after short delay
+            setTimeout(() => router.push("/dashboard"), 1000);
         } catch (err: any) {
             console.error("Task creation error:", err);
             const message =
@@ -54,37 +53,34 @@ export default function TasksPage() {
     };
 
     return (
-        <div className="p-6 min-h-screen bg-gray-700 text-white flex flex-col items-center">
-            <h1 className="text-2xl font-bold mb-6 text-center">Create a New Task</h1>
+        <div className="p-6 min-h-screen bg-gray-900 text-gray-100 flex flex-col items-center">
+            <h1 className="text-2xl font-semibold mb-6 text-center">Create a New Task</h1>
 
-            {/* Alerts */}
             {errorMessage && <Alert type="error" message={errorMessage} />}
             {successMessage && <Alert type="success" message={successMessage} />}
 
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="space-y-4 w-full max-w-md bg-gray-800 p-6 rounded-lg shadow"
+                className="space-y-4 w-full max-w-md bg-gray-800 p-6 rounded-lg shadow-md section-fade"
             >
-                <input
+                <Input
                     {...register("title", { required: true })}
                     placeholder="Task title"
-                    className="w-full bg-gray-900 text-white border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
                 <textarea
                     {...register("description")}
                     placeholder="Task description"
-                    className="w-full bg-gray-900 text-white border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-900 text-gray-100 
+            focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors duration-200"
                 />
-                <button
+                <Button
                     type="submit"
                     disabled={loading}
-                    className={`w-full p-2 rounded transition ${loading
-                        ? "bg-gray-500 cursor-not-allowed"
-                        : "bg-green-600 hover:bg-green-700"
-                        }`}
+                    className="w-full"
+                    variant={loading ? "outline" : "default"}
                 >
                     {loading ? "Adding..." : "Add Task"}
-                </button>
+                </Button>
             </form>
         </div>
     );

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { healthcheck } from "../controllers/healthcheck.controller.js";
+import { healthcheck } from "../controllers/healthcheck.controllers.js"; // ✅ plural consistency
 
-const router = Router()
+const router = Router();
 
-router.route("/").get(healthcheck)
+// 🩺 Healthcheck route
+router.get("/", healthcheck);
 
-
-export default router
+export default router;

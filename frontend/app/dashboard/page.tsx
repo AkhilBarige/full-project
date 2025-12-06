@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getToken } from "../../lib/auth";
 import { api } from "../../lib/api";
-import Alert from "../../components/Alert"; // adjust path if needed
+import Alert from "../../components/Alert";
+import Button from "../../components/Button";
 
-// Task type
 type Task = {
     _id: string;
     title: string;
@@ -76,8 +76,8 @@ export default function DashboardPage() {
     };
 
     return (
-        <div className="p-6 bg-gray-700 min-h-screen text-white flex flex-col items-center">
-            {/* Centered heading */}
+        <div className="p-6 bg-gray-900 min-h-screen text-gray-100 flex flex-col items-center">
+            {/* Heading */}
             <h1 className="text-3xl font-bold mb-6 text-center">My Dashboard</h1>
 
             {/* Alerts */}
@@ -86,17 +86,17 @@ export default function DashboardPage() {
 
             {/* Loading Spinner */}
             {loading && (
-                <div className="animate-spin h-6 w-6 border-2 border-white border-t-transparent rounded-full mx-auto my-4"></div>
+                <div className="animate-spin h-6 w-6 border-2 border-gray-300 border-t-transparent rounded-full mx-auto my-4"></div>
             )}
 
             {tasks.length === 0 && !loading ? (
-                <p className="text-gray-300 text-center">No tasks yet. Try creating one!</p>
+                <p className="text-gray-400 text-center">No tasks yet. Try creating one!</p>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
+                <div className="w-full max-w-md space-y-4">
                     {tasks.map((task) => (
                         <div
                             key={task._id}
-                            className="bg-gray-800 rounded-lg p-4 flex flex-col justify-between shadow-md"
+                            className="card-hover bg-gray-800 rounded-lg p-4 shadow-md transition-transform duration-300 ease-in-out"
                         >
                             <div>
                                 <h2 className="text-lg font-semibold">{task.title}</h2>
@@ -114,31 +114,40 @@ export default function DashboardPage() {
                             </div>
 
                             <div className="flex gap-2 mt-4">
-                                <button
+                                <Button
                                     onClick={() => handleToggle(task._id, task.completed)}
                                     disabled={loading}
-                                    className={`flex-1 px-3 py-2 rounded transition ${loading
-                                            ? "bg-gray-500 cursor-not-allowed"
-                                            : "bg-gray-200 text-black hover:bg-gray-500"
-                                        }`}
+                                    variant="outline"
+                                    size="sm"
+                                    className="flex-1"
                                 >
                                     {task.completed ? "Mark Pending" : "Mark Done"}
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     onClick={() => handleDelete(task._id)}
                                     disabled={loading}
-                                    className={`flex-1 px-3 py-2 rounded transition ${loading
-                                            ? "bg-gray-500 cursor-not-allowed"
-                                            : "bg-red-500 text-white hover:bg-red-700"
-                                        }`}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="flex-1"
                                 >
                                     Delete
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     ))}
                 </div>
             )}
+
+            {/* Create New Task button at bottom */}
+            <div className="mt-8 flex justify-center">
+                <Button
+                    onClick={() => router.push("/tasks")}
+                    variant="default"
+                    size="md"
+                >
+                    ➕ Create New Task
+                </Button>
+            </div>
         </div>
     );
 }

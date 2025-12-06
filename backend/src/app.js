@@ -2,20 +2,22 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+import { ApiError } from "./utils/api-error.js";
 
+// Initialize app
 const app = express();
 
-// ✅ Security best practices
-app.use(helmet()); // adds X-Content-Type-Options, etc.
+// 🔒 Security best practices
+app.use(helmet()); // adds secure headers
 app.disable("x-powered-by"); // removes "X-Powered-By" header
 
-// ✅ Middleware
+// 📦 Middleware
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// ✅ CORS setup
+// 🌍 CORS setup
 const allowedOrigins = process.env.CORS_ORIGIN?.split(",") || ["http://localhost:3000"];
 app.use(
     cors({
@@ -26,48 +28,42 @@ app.use(
     })
 );
 
-// ✅ Handle preflight requests properly
-app.options(/.*/, cors());
+// Handle preflight requests
+app.options("/", cors());
 
-
-// ✅ Cache control middleware (example: 1 hour for static assets)
+// 🗄️ Cache control middleware (example: 1 hour for static assets)
 app.use((req, res, next) => {
     res.setHeader("Cache-Control", "public, max-age=3600");
     next();
 });
 
-// ✅ Routes
-import healthcheckrouter from "./routes/healthcheck.route.js";
-import authrouter from "./routes/auth.route.js";
-import taskRoutes from "./routes/task.route.js";
+// 🚦 Routes
+import healthcheckRouter from "./routes/healthcheck.route.js";
+import authRouter from "./routes/auth.route.js";
+import taskRouter from "./routes/task.route.js";
 
-app.use("/api/v1/healthcheck", healthcheckrouter);
-app.use("/api/v1/auth", authrouter);
-app.use("/api/v1/tasks", taskRoutes);
+app.use("/api/v1/healthcheck", healthcheckRouter);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/tasks", taskRouter);
 
-app.get("/", (req, res) => {
-    res.send("hello man!");
-});
-app.get("/look", (req, res) => {
-    res.send("we are here already");
-});
+// Simple test routes
+app.get("/", (_req, res) => res.send("Hello, Task Manager API is running!"));
+app.get("/look", (_req, res) => res.send("We are here already"));
 
-// ✅ Error handling
-import { ApiError } from "./utils/api-error.js";
-
-app.use((err, req, res, next) => {
-    console.error(err);
+// ❌ Error handling middleware
+app.use((err, _req, res, _next) => {
+    console.error("Error:", err);
 
     if (err instanceof ApiError) {
         return res.status(err.statusCode).json({
-            statuscode: err.statusCode,
+            statusCode: err.statusCode,
             message: err.message,
             success: false,
         });
     }
 
     res.status(500).json({
-        statuscode: 500,
+        statusCode: 500,
         message: "Internal Server Error",
         success: false,
     });

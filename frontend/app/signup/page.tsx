@@ -7,7 +7,9 @@ import { api } from "../../lib/api";
 import { saveToken } from "../../lib/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Alert from "../../components/Alert"; // adjust path if needed
+import Alert from "../../components/Alert";
+import Button from "../../components/Button";   // ✅ use reusable Button
+import Input from "../../components/Input";     // ✅ create reusable Input
 
 // 1. Validation schema
 const schema = z.object({
@@ -72,72 +74,49 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-700 text-white">
+        <div className="flex items-center justify-center min-h-screen bg-gray-900 text-gray-100">
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="bg-gray-800 p-6 rounded-lg shadow-md w-96 space-y-4"
+                className="bg-gray-800 p-6 rounded-lg shadow-md w-96 space-y-4 section-fade"
             >
-                <h1 className="text-2xl font-bold text-center">Create Account</h1>
+                <h1 className="text-2xl font-semibold text-center">Create Account</h1>
 
                 {/* Alerts */}
                 {errorMessage && <Alert type="error" message={errorMessage} />}
                 {successMessage && <Alert type="success" message={successMessage} />}
 
-                <div>
-                    <input
-                        {...register("username")}
-                        placeholder="Username (lowercase)"
-                        className="w-full bg-gray-900 text-white border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    />
-                    {errors.username && (
-                        <p className="text-red-400 text-sm mt-1">{errors.username.message}</p>
-                    )}
-                </div>
+                {/* Inputs */}
+                <Input
+                    {...register("username")}
+                    placeholder="Username (lowercase)"
+                    error={errors.username?.message}
+                />
+                <Input
+                    {...register("fullName")}
+                    placeholder="Full Name"
+                    error={errors.fullName?.message}
+                />
+                <Input
+                    {...register("email")}
+                    placeholder="Email"
+                    error={errors.email?.message}
+                />
+                <Input
+                    {...register("password")}
+                    type="password"
+                    placeholder="Password"
+                    error={errors.password?.message}
+                />
 
-                <div>
-                    <input
-                        {...register("fullName")}
-                        placeholder="Full Name"
-                        className="w-full bg-gray-900 text-white border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    />
-                    {errors.fullName && (
-                        <p className="text-red-400 text-sm mt-1">{errors.fullName.message}</p>
-                    )}
-                </div>
-
-                <div>
-                    <input
-                        {...register("email")}
-                        placeholder="Email"
-                        className="w-full bg-gray-900 text-white border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    />
-                    {errors.email && (
-                        <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
-                    )}
-                </div>
-
-                <div>
-                    <input
-                        {...register("password")}
-                        type="password"
-                        placeholder="Password"
-                        className="w-full bg-gray-900 text-white border border-gray-600 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    />
-                    {errors.password && (
-                        <p className="text-red-400 text-sm mt-1">{errors.password.message}</p>
-                    )}
-                </div>
-
-                <button
+                {/* Button */}
+                <Button
                     type="submit"
                     disabled={loading}
-                    className={`w-full p-2 rounded transition ${loading
-                        ? "bg-gray-500 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700"
-                        }`}
+                    className="w-full"
+                    variant={loading ? "outline" : "default"}
                 >
                     {loading ? "Signing up..." : "Sign Up"}
-                </button>
+                </Button>
             </form>
         </div>
     );
