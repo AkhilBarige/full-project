@@ -70,6 +70,8 @@ const login = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({ email }).select("+password");
     if (!user) throw new ApiError(400, "User Not Found");
+    console.log("Login attempt:", email, password);
+    console.log("Stored hash:", user.password);
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) throw new ApiError(400, "Invalid Password");
