@@ -69,10 +69,10 @@ const login = asyncHandler(async (req, res) => {
     }
 
     const user = await User.findOne({ email }).select("+password");
-    if (!user) throw new ApiError(400, "Invalid credentials");
+    if (!user) throw new ApiError(400, "User Not Found");
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new ApiError(400, "Invalid credentials");
+    if (!isMatch) throw new ApiError(400, "Invalid Password");
 
     const accessToken = generateAccessToken(user);
 
