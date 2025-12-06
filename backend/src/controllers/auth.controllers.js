@@ -65,12 +65,15 @@ const login = asyncHandler(async (req, res) => {
     }
 
     const user = await User.findOne({ email }).select("+password");
-    if (!user) throw new ApiError(400, "User Not Found");
+    if (!user) throw new ApiError(404, "User Not Found");
+
     console.log("Login attempt:", email, password);
     console.log("Stored hash:", user.password);
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new ApiError(400, "Invalid Password");
+    const isMatch = await user.isPasswordCorrect(password);
+    if (!isMatch) {
+        throw new ApiError(401, "Invalid Password");
+    }
 
     const accessToken = generateAccessToken(user);
 
@@ -81,13 +84,14 @@ const login = asyncHandler(async (req, res) => {
         fullName: user.fullName,
     };
 
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, { user: safeUser, accessToken }, "Login successful")
-        );
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            { user: safeUser, accessToken },
+            "Login successful"
+        )
+    );
 });
-
 // 🚪 LOGOUT
 const logout = asyncHandler(async (_req, res) => {
     return res
