@@ -1,3 +1,18 @@
+// import axios from "axios";
+
+// export const api = axios.create({
+//     baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1",
+//     withCredentials: true,
+// });
+
+// api.interceptors.request.use((config) => {
+//     const token = localStorage.getItem("accessToken");
+//     if (token) {
+//         config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+// });
+
 import axios from "axios";
 
 export const api = axios.create({
@@ -5,10 +20,13 @@ export const api = axios.create({
     withCredentials: true,
 });
 
+// Attach token only on the client side
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    if (typeof window !== "undefined") {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
     }
     return config;
 });

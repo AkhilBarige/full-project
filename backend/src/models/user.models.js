@@ -38,19 +38,20 @@ const userSchema = new Schema(
             type: String,
             required: [true, "Password is required"],
             trim: true,
+            select: false, // hide password by default
         },
     },
     { timestamps: true }
 );
 
-// Hash password before saving
+// Hash password before saving (bcrypt only)
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });
 
-// Compare password
+// Compare password (bcrypt only)
 userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 };

@@ -25,12 +25,6 @@ router.post("/login", userLoginValidator(), validate, login);
 // Secure routes
 router.post("/logout", verifyJWT, logout);
 router.get("/current-user", verifyJWT, getCurrentUser); // GET instead of POST
-router.post(
-    "/change-password",
-    verifyJWT,
-    userChangeCurrentPasswordValidator(),
-    validate,
-    changeCurrentPassword
-);
+router.post("/change-password", verifyJWT, changeCurrentPassword);
 
 export default router;
