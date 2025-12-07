@@ -27,7 +27,7 @@ export default function TasksPage() {
         setSuccessMessage("");
 
         try {
-            // ✅ No need to manually attach token — interceptor handles it
+
             await api.post("/tasks", data);
 
             setSuccessMessage("✅ Task created successfully!");

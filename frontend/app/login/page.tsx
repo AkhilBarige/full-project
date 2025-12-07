@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../../lib/api";
-import { saveToken } from "../../lib/auth"; // ✅ stores token in cookie + localStorage
+import { saveToken } from "../../lib/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Alert from "../../components/Alert";
@@ -58,11 +58,11 @@ export default function LoginPage() {
                 data
             );
 
-            // ✅ Save token in cookie + localStorage
+            // Save token in cookie + localStorage
             saveToken(res.data.data.accessToken);
 
             setSuccessMessage("Login successful! Redirecting...");
-            router.push("/dashboard"); // ✅ immediate redirect
+            router.push("/dashboard"); //  immediate redirect
         } catch (err) {
             console.error("Login error:", err);
             setErrorMessage("Login failed. Please check your credentials.");

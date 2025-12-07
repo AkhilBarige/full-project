@@ -3,7 +3,7 @@ import { healthcheck } from "../controllers/healthcheck.controllers.js"; // ✅ 
 
 const router = Router();
 
-// 🩺 Healthcheck route
+//  Healthcheck route
 router.get("/", healthcheck);
 
 export default router;

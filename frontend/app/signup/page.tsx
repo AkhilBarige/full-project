@@ -8,8 +8,8 @@ import { saveToken } from "../../lib/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Alert from "../../components/Alert";
-import Button from "../../components/Button";   // ✅ use reusable Button
-import Input from "../../components/Input";     // ✅ create reusable Input
+import Button from "../../components/Button";
+import Input from "../../components/Input";
 
 // 1. Validation schema
 const schema = z.object({

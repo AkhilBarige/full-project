@@ -1,4 +1,4 @@
-// 🔒 User roles
+//  User roles
 export const UserRolesEnum = {
     ADMIN: "admin",
     PROJECT_ADMIN: "project_admin",
@@ -7,7 +7,7 @@ export const UserRolesEnum = {
 
 export const AvailableUserRoles = Object.values(UserRolesEnum);
 
-// 📋 Task statuses
+// Task statuses
 export const TaskStatusEnum = {
     TODO: "todo",
     IN_PROGRESS: "in_progress",

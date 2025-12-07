@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "../lib/utils"; // helper to merge classNames if you have one
+import { cn } from "../lib/utils";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: "default" | "outline" | "ghost" | "destructive";

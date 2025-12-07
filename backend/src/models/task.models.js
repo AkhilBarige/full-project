@@ -14,7 +14,7 @@ const taskSchema = new Schema(
         },
         status: {
             type: String,
-            enum: AvailableTaskStatus, // ✅ enforce status values from constants
+            enum: AvailableTaskStatus,
             default: TaskStatusEnum.TODO,
         },
         dueDate: {
@@ -24,7 +24,7 @@ const taskSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "User",
             required: true,
-            index: true, // ✅ faster queries by user
+            index: true,
         },
     },
     { timestamps: true }

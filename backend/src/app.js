@@ -4,20 +4,19 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import { ApiError } from "./utils/api-error.js";
 
-// Initialize app
 const app = express();
 
-// 🔒 Security best practices
-app.use(helmet()); // adds secure headers
+// Security best practices
+app.use(helmet());
 app.disable("x-powered-by"); // removes "X-Powered-By" header
 
-// 📦 Middleware
+// Middleware
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// 🌍 CORS setup
+//  CORS setup
 const allowedOrigins = process.env.CORS_ORIGIN?.split(",") || ["http://localhost:3000"];
 app.use(
     cors({
@@ -31,13 +30,13 @@ app.use(
 // Handle preflight requests
 app.options("/", cors());
 
-// 🗄️ Cache control middleware (example: 1 hour for static assets)
+//  Cache control middleware 
 app.use((req, res, next) => {
     res.setHeader("Cache-Control", "public, max-age=3600");
     next();
 });
 
-// 🚦 Routes
+// Routes
 import healthcheckRouter from "./routes/healthcheck.route.js";
 import authRouter from "./routes/auth.route.js";
 import taskRouter from "./routes/task.route.js";
@@ -50,7 +49,7 @@ app.use("/api/v1/tasks", taskRouter);
 app.get("/", (_req, res) => res.send("Hello, Task Manager API is running!"));
 app.get("/look", (_req, res) => res.send("We are here already"));
 
-// ❌ Error handling middleware
+// Error handling middleware
 app.use((err, _req, res, _next) => {
     console.error("Error:", err);
 

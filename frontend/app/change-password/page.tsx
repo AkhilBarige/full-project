@@ -1,11 +1,15 @@
 "use client";
 
 import ChangePasswordForm from "../../components/ChangePasswordForm";
-import { getToken } from "../../lib/auth";
+import { useRouter } from "next/navigation";
 
 export default function ChangePasswordPage() {
-    // ✅ Use your existing helper to get token
-    const token = getToken();
+    const router = useRouter();
+
+    const handleSuccess = () => {
+        // Redirect back to profile with success flag
+        router.push("/profile?success=password");
+    };
 
     return (
         <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col items-center justify-center p-8">
@@ -14,7 +18,8 @@ export default function ChangePasswordPage() {
                 <p className="text-gray-400 text-center mb-6">
                     Enter your current and new password below to update your account securely.
                 </p>
-                <ChangePasswordForm token={token} />
+                {/* Pass success callback to form */}
+                <ChangePasswordForm onSuccess={handleSuccess} />
             </div>
         </div>
     );

@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/async-handler.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-// 🔑 Helper to generate JWT
+//   generate JWT
 const generateAccessToken = (user) => {
     if (!process.env.ACCESS_TOKEN_SECRET) {
         throw new ApiError(500, "JWT secret not configured");
@@ -17,7 +17,7 @@ const generateAccessToken = (user) => {
     );
 };
 
-// 📝 REGISTER (Signup)
+//  REGISTER (Signup)
 const registerUser = asyncHandler(async (req, res) => {
     const { email, username, password, fullName } = req.body;
 
@@ -30,7 +30,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User already exists");
     }
 
-    // ❌ Don't hash here — let pre-save hook handle it
+
     const user = await User.create({
         email,
         username,
@@ -56,7 +56,7 @@ const registerUser = asyncHandler(async (req, res) => {
     );
 });
 
-// 🔐 LOGIN
+//  LOGIN
 const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
@@ -66,9 +66,6 @@ const login = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({ email }).select("+password");
     if (!user) throw new ApiError(404, "User Not Found");
-
-    console.log("Login attempt:", email, password);
-    console.log("Stored hash:", user.password);
 
     const isMatch = await user.isPasswordCorrect(password);
     if (!isMatch) {
@@ -92,14 +89,14 @@ const login = asyncHandler(async (req, res) => {
         )
     );
 });
-// 🚪 LOGOUT
+//  LOGOUT
 const logout = asyncHandler(async (_req, res) => {
     return res
         .status(200)
         .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
-// 👤 GET CURRENT USER
+//  GET CURRENT USER
 const getCurrentUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id).select("-password");
     if (!user) throw new ApiError(404, "User not found");
@@ -109,7 +106,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, user, "Current user fetched successfully"));
 });
 
-// 🔒 CHANGE PASSWORD
+//  CHANGE PASSWORD
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
 
@@ -123,12 +120,13 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) throw new ApiError(400, "Wrong password");
 
-    user.password = await bcrypt.hash(newPassword, 10);
+    user.password = newPassword;
+    user.passwordUpdatedAt = new Date();
     await user.save();
 
     return res
         .status(200)
-        .json(new ApiResponse(200, {}, "Password changed successfully"));
+        .json(new ApiResponse(200, { passwordUpdatedAt: user.passwordUpdatedAt }, "Password changed successfully"));
 });
 
 export {

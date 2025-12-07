@@ -2,25 +2,23 @@
 
 import { useState } from "react";
 import { changePassword } from "../lib/auth";
-import Button from "./Button";   // ✅ use reusable Button
-import Input from "./Input";     // ✅ use reusable Input
-import Alert from "./Alert";     // ✅ for success/error messages
+import Button from "./Button";
+import Input from "./Input";
+import Alert from "./Alert";
 
 interface ChangePasswordFormProps {
-    token?: string | null; // optional if interceptor handles auth
+    onSuccess?: () => void;
 }
 
-export default function ChangePasswordForm({ token }: ChangePasswordFormProps) {
+export default function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [message, setMessage] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setMessage("");
         setError("");
 
         if (newPassword !== confirmPassword) {
@@ -30,10 +28,10 @@ export default function ChangePasswordForm({ token }: ChangePasswordFormProps) {
 
         try {
             setLoading(true);
-            const res = await changePassword(oldPassword, newPassword);
-            setMessage(res.message || "Password changed successfully!");
+            await changePassword(oldPassword, newPassword);
+            if (onSuccess) onSuccess(); // redirect handled in parent
         } catch (err: any) {
-            setError(err.message || "Failed to change password.");
+            setError(err.response?.data?.message || "Failed to change password.");
         } finally {
             setLoading(false);
         }
@@ -42,7 +40,6 @@ export default function ChangePasswordForm({ token }: ChangePasswordFormProps) {
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             {error && <Alert type="error" message={error} />}
-            {message && <Alert type="success" message={message} />}
 
             <Input
                 type="password"

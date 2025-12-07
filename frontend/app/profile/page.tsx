@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "../../lib/api";
 import Alert from "../../components/Alert";
 import Button from "../../components/Button";
@@ -13,39 +13,25 @@ type UserProfile = {
     dob?: string;
     phone?: string;
     address?: string;
+    passwordUpdatedAt?: string;
 };
 
 export default function ProfilePage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const successFlag = searchParams.get("success");
+
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
-    // const fetchProfile = async () => {
-    //     setLoading(true);
-    //     setErrorMessage("");
-    //     try {
-    //         // ✅ No need to manually attach token — interceptor does it
-    //         const res = await api.get("/auth/profile");
-
-    //         // ✅ Adjust based on backend response shape
-    //         const userData = res.data.data?.user || res.data.data || res.data.user || res.data;
-    //         setProfile(userData);
-    //     } catch (err: any) {
-    //         console.error("Profile fetch error:", err);
-    //         const message = err.response?.data?.message || "Failed to load profile.";
-    //         setErrorMessage(message);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
     const fetchProfile = async () => {
         setLoading(true);
         setErrorMessage("");
         try {
             const res = await api.get("/auth/profile");
-            setProfile(res.data.data); // ✅ direct user object
+            setProfile(res.data.data);
         } catch (err: any) {
             console.error("Profile fetch error:", err);
             const message = err.response?.data?.message || "Failed to load profile.";
@@ -58,6 +44,13 @@ export default function ProfilePage() {
     useEffect(() => {
         fetchProfile();
     }, []);
+
+    //  Set success message if redirected after password change
+    useEffect(() => {
+        if (successFlag === "password") {
+            setSuccessMessage("Password updated successfully!");
+        }
+    }, [successFlag]);
 
     const handleEditField = (field: keyof UserProfile) => {
         router.push(`/profile/edit?field=${field}`);
@@ -121,6 +114,16 @@ export default function ProfilePage() {
                         <Button variant="outline" size="sm" onClick={() => handleEditField("address")}>
                             Edit
                         </Button>
+                    </div>
+
+                    {/*  Password Updated Date */}
+                    <div>
+                        <p className="text-sm text-gray-400">Password Updated</p>
+                        <p className="text-lg font-semibold">
+                            {profile.passwordUpdatedAt
+                                ? new Date(profile.passwordUpdatedAt).toLocaleString()
+                                : "Never"}
+                        </p>
                     </div>
 
                     {/* Change Password */}

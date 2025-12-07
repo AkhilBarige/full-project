@@ -17,7 +17,8 @@ export default function Alert({ type, message }: AlertProps) {
 
     return (
         <div className={`${baseClasses} ${typeClasses[type]}`}>
-            {message}
+            {/* Wrap message in span with no-underline */}
+            <span className="no-underline">{message}</span>
         </div>
     );
 }

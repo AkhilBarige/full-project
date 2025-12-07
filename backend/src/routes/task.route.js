@@ -5,16 +5,16 @@ import {
     getTasks,
     updateTask,
     deleteTask,
-} from "../controllers/task.controllers.js"; // ✅ plural consistency
-import { verifyJWT } from "../middleware/auth.js"; // ✅ consistent naming
-import { validate } from "../middleware/validate.js"; // ✅ consistent naming
+} from "../controllers/task.controllers.js";
+import { verifyJWT } from "../middleware/auth.js";
+import { validate } from "../middleware/validate.js";
 
 const router = Router();
 
-// 🔒 All task routes require authentication
+//  All task routes require authentication
 router.use(verifyJWT);
 
-// 📝 Create task
+//  Create task
 router.post(
     "/",
     [
@@ -41,10 +41,10 @@ router.post(
     createTask
 );
 
-// 📋 Get all tasks
+//  Get all tasks
 router.get("/", getTasks);
 
-// ✏️ Update task by ID
+//  Update task by ID
 router.put(
     "/:id",
     [
@@ -70,7 +70,7 @@ router.put(
     updateTask
 );
 
-// 🗑️ Delete task by ID
+//  Delete task by ID
 router.delete("/:id", deleteTask);
 
 export default router;

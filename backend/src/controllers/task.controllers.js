@@ -3,7 +3,7 @@ import { asyncHandler } from "../utils/async-handler.js";
 import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
 
-// 📝 Create task
+// Create task
 export const createTask = asyncHandler(async (req, res) => {
     const { title, description, status, dueDate } = req.body;
 
@@ -14,19 +14,19 @@ export const createTask = asyncHandler(async (req, res) => {
         description,
         status,
         dueDate,
-        owner: req.user._id, // ✅ matches Task model
+        owner: req.user._id,
     });
 
     return res.status(201).json(new ApiResponse(201, task, "Task created successfully"));
 });
 
-// 📋 Get all tasks for logged-in user
+// Get all tasks for logged-in user
 export const getTasks = asyncHandler(async (req, res) => {
     const tasks = await Task.find({ owner: req.user._id }).sort({ createdAt: -1 });
     return res.status(200).json(new ApiResponse(200, tasks, "Tasks fetched successfully"));
 });
 
-// ✏️ Update task by ID
+//  Update task by ID
 export const updateTask = asyncHandler(async (req, res) => {
     const task = await Task.findOneAndUpdate(
         { _id: req.params.id, owner: req.user._id },
@@ -39,7 +39,7 @@ export const updateTask = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, task, "Task updated successfully"));
 });
 
-// 🗑️ Delete task by ID
+//  Delete task by ID
 export const deleteTask = asyncHandler(async (req, res) => {
     const task = await Task.findOneAndDelete({ _id: req.params.id, owner: req.user._id });
 

@@ -5,31 +5,31 @@ import {
     logout,
     getCurrentUser,
     changeCurrentPassword,
-} from "../controllers/auth.controllers.js"; // ✅ fixed filename consistency
+} from "../controllers/auth.controllers.js";
 
-import { validate } from "../middleware/validate.js"; // ✅ consistent naming
+import { validate } from "../middleware/validate.js";
 import {
     userRegisterValidator,
     userLoginValidator,
     userChangeCurrentPasswordValidator,
 } from "../validators/index.js";
 
-import { verifyJWT } from "../middleware/auth.js"; // ✅ consistent naming
+import { verifyJWT } from "../middleware/auth.js";
 
 const router = Router();
 
-// 🟢 Public routes
-router.post("/signup", userRegisterValidator(), validate, registerUser); // matches frontend
+// Public routes
+router.post("/signup", userRegisterValidator(), validate, registerUser);
 router.post("/login", userLoginValidator(), validate, login);
 
-// 🔒 Secure routes
+//  Secure routes
 router.post("/logout", verifyJWT, logout);
-router.get("/profile", verifyJWT, getCurrentUser); // GET is correct for fetching
+router.get("/profile", verifyJWT, getCurrentUser);
 router.post(
     "/change-password",
+    verifyJWT,
     userChangeCurrentPasswordValidator(),
     validate,
-    verifyJWT,
     changeCurrentPassword
 );
 
