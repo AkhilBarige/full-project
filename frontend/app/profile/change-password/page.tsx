@@ -1,6 +1,6 @@
 "use client";
 
-import ChangePasswordForm from "../../components/ChangePasswordForm";
+import ChangePasswordForm from "../../../components/ChangePasswordForm";
 import { useRouter } from "next/navigation";
 
 export default function ChangePasswordPage() {
