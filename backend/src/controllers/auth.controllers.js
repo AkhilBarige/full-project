@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/async-handler.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-//   generate JWT
+// Generate JWT
 const generateAccessToken = (user) => {
     if (!process.env.ACCESS_TOKEN_SECRET) {
         throw new ApiError(500, "JWT secret not configured");
@@ -17,7 +17,7 @@ const generateAccessToken = (user) => {
     );
 };
 
-//  REGISTER (Signup)
+// REGISTER (Signup)
 const registerUser = asyncHandler(async (req, res) => {
     const { email, username, password, fullName } = req.body;
 
@@ -30,12 +30,11 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User already exists");
     }
 
-
     const user = await User.create({
         email,
         username,
         fullName,
-        password, // plain password, will be hashed by pre-save hook
+        password, // hashed by pre-save hook
     });
 
     const accessToken = generateAccessToken(user);
@@ -56,7 +55,7 @@ const registerUser = asyncHandler(async (req, res) => {
     );
 });
 
-//  LOGIN
+// LOGIN
 const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
@@ -65,11 +64,11 @@ const login = asyncHandler(async (req, res) => {
     }
 
     const user = await User.findOne({ email }).select("+password");
-    if (!user) throw new ApiError(404, "User Not Found");
+    if (!user) throw new ApiError(404, "User not found");
 
     const isMatch = await user.isPasswordCorrect(password);
     if (!isMatch) {
-        throw new ApiError(401, "Invalid Password");
+        throw new ApiError(401, "Invalid password");
     }
 
     const accessToken = generateAccessToken(user);
@@ -82,22 +81,23 @@ const login = asyncHandler(async (req, res) => {
     };
 
     return res.status(200).json(
-        new ApiResponse(
-            200,
-            { user: safeUser, accessToken },
-            "Login successful"
-        )
+        new ApiResponse(200, { user: safeUser, accessToken }, "Login successful")
     );
 });
-//  LOGOUT
+
+// LOGOUT
 const logout = asyncHandler(async (_req, res) => {
     return res
         .status(200)
         .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
-//  GET CURRENT USER
+// GET CURRENT USER
 const getCurrentUser = asyncHandler(async (req, res) => {
+    if (!req.user || !req.user._id) {
+        throw new ApiError(401, "Unauthorized");
+    }
+
     const user = await User.findById(req.user._id).select("-password");
     if (!user) throw new ApiError(404, "User not found");
 
@@ -106,12 +106,16 @@ const getCurrentUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, user, "Current user fetched successfully"));
 });
 
-//  CHANGE PASSWORD
+// CHANGE PASSWORD
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
 
     if (!oldPassword || !newPassword) {
         throw new ApiError(400, "Both old and new passwords are required");
+    }
+
+    if (!req.user || !req.user._id) {
+        throw new ApiError(401, "Unauthorized");
     }
 
     const user = await User.findById(req.user._id).select("+password");
@@ -124,9 +128,13 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     user.passwordUpdatedAt = new Date();
     await user.save();
 
-    return res
-        .status(200)
-        .json(new ApiResponse(200, { passwordUpdatedAt: user.passwordUpdatedAt }, "Password changed successfully"));
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            { passwordUpdatedAt: user.passwordUpdatedAt },
+            "Password changed successfully"
+        )
+    );
 });
 
 export {

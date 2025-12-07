@@ -25,11 +25,7 @@ router.post("/login", userLoginValidator(), validate, login);
 //  Secure routes
 router.post("/logout", verifyJWT, logout);
 router.get("/profile", verifyJWT, getCurrentUser);
-router.post(
-    "/change-password",
-    verifyJWT,
-    userChangeCurrentPasswordValidator(),
-    validate,
+router.post("/change-password", verifyJWT, userChangeCurrentPasswordValidator(), validate,
     changeCurrentPassword
 );
 
