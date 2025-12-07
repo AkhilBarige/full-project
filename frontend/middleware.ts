@@ -2,14 +2,15 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
-    const token = req.cookies.get("token")?.value;
+    // ✅ match the cookie name you actually set in auth.ts
+    const token = req.cookies.get("accessToken")?.value;
     const pathname = req.nextUrl.pathname;
 
     // Define public routes (prefix match for nested paths)
     const publicPaths = ["/", "/login", "/signup"];
 
-    const isPublic = publicPaths.some((path) =>
-        pathname === path || pathname.startsWith(`${path}/`)
+    const isPublic = publicPaths.some(
+        (path) => pathname === path || pathname.startsWith(`${path}/`)
     );
 
     // Redirect if not logged in and trying to access a protected route
