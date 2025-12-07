@@ -15,10 +15,9 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         } else {
             setAuthorized(true);
         }
-    }, [router]);
+    }, []); // run once
 
     if (!authorized) {
-        // Optional: show a spinner while checking
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-900 text-gray-100">
                 <div className="animate-spin h-6 w-6 border-2 border-gray-300 border-t-transparent rounded-full"></div>

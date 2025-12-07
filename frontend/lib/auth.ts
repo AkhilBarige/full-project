@@ -2,25 +2,37 @@ import { api } from "./api"; // ✅ axios instance
 
 const TOKEN_KEY = "accessToken"; // centralized key
 
-// Save token to localStorage
+// Save token to both cookie + localStorage
 export const saveToken = (token: string): void => {
     if (typeof window !== "undefined" && token) {
+        // LocalStorage (optional, for client-side reads)
         localStorage.setItem(TOKEN_KEY, token);
+
+        // Cookie (for middleware + server-side checks)
+        document.cookie = `${TOKEN_KEY}=${token}; path=/; secure; samesite=lax`;
     }
 };
 
-// Retrieve token from localStorage
+// Retrieve token (prefer cookie, fallback to localStorage)
 export const getToken = (): string | null => {
     if (typeof window !== "undefined") {
+        // Try cookie first
+        const match = document.cookie.match(new RegExp(`(^| )${TOKEN_KEY}=([^;]+)`));
+        if (match) return match[2];
+
+        // Fallback to localStorage
         return localStorage.getItem(TOKEN_KEY);
     }
     return null;
 };
 
-// Clear token from localStorage
+// Clear token from both cookie + localStorage
 export const clearToken = (): void => {
     if (typeof window !== "undefined") {
         localStorage.removeItem(TOKEN_KEY);
+
+        // Expire cookie
+        document.cookie = `${TOKEN_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     }
 };
 

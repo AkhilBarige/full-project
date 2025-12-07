@@ -55,7 +55,7 @@ export default function LoginPage() {
             const res = await api.post<ApiResponse<LoginResponseData>>("/auth/login", data);
             saveToken(res.data.data.accessToken);
             setSuccessMessage("Login successful! Redirecting...");
-            setTimeout(() => router.push("/dashboard"), 1000);
+            router.push("/dashboard")
         } catch (err) {
             console.error("Login error:", err);
             setErrorMessage("Login failed. Please check your credentials.");
