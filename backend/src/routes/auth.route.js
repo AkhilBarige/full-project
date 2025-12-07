@@ -24,7 +24,7 @@ router.post("/login", userLoginValidator(), validate, login);
 
 // 🔒 Secure routes
 router.post("/logout", verifyJWT, logout);
-router.get("/current-user", verifyJWT, getCurrentUser); // GET is correct for fetching
+router.get("/profile", verifyJWT, getCurrentUser); // GET is correct for fetching
 router.post(
     "/change-password",
     userChangeCurrentPasswordValidator(),
