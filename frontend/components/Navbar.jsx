@@ -4,7 +4,7 @@ import Link from "next/link";
 import { clearToken, getToken } from "../lib/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Button from "@/components/Button"; // ✅ reusable Button
+import Button from "./Button";
 
 export default function Navbar() {
     const router = useRouter();
@@ -16,8 +16,15 @@ export default function Navbar() {
         setIsLoggedIn(!!token);
 
         const handleScroll = () => setScrolled(window.scrollY > 10);
+        const handleStorage = () => setIsLoggedIn(!!getToken());
+
         window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        window.addEventListener("storage", handleStorage);
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("storage", handleStorage);
+        };
     }, []);
 
     const handleLogout = () => {
@@ -66,11 +73,7 @@ export default function Navbar() {
                         </Link>
                     </>
                 ) : (
-                    <Button
-                        onClick={handleLogout}
-                        variant="default"
-                        size="sm"
-                    >
+                    <Button onClick={handleLogout} variant="default" size="sm">
                         Logout
                     </Button>
                 )}

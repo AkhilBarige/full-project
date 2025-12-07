@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getToken } from "../../lib/auth";
 import { api } from "../../lib/api";
 import Alert from "../../components/Alert";
 import Button from "../../components/Button";
@@ -23,22 +22,34 @@ export default function ProfilePage() {
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
+    // const fetchProfile = async () => {
+    //     setLoading(true);
+    //     setErrorMessage("");
+    //     try {
+    //         // ✅ No need to manually attach token — interceptor does it
+    //         const res = await api.get("/auth/profile");
+
+    //         // ✅ Adjust based on backend response shape
+    //         const userData = res.data.data?.user || res.data.data || res.data.user || res.data;
+    //         setProfile(userData);
+    //     } catch (err: any) {
+    //         console.error("Profile fetch error:", err);
+    //         const message = err.response?.data?.message || "Failed to load profile.";
+    //         setErrorMessage(message);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
     const fetchProfile = async () => {
         setLoading(true);
         setErrorMessage("");
         try {
-            const token = getToken();
-            if (!token) {
-                router.push("/login");
-                return;
-            }
-            const res = await api.get("/auth/profile", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setProfile(res.data.data);
-        } catch (err) {
-            console.error(err);
-            setErrorMessage("Failed to load profile.");
+            const res = await api.get("/auth/profile");
+            setProfile(res.data.data); // ✅ direct user object
+        } catch (err: any) {
+            console.error("Profile fetch error:", err);
+            const message = err.response?.data?.message || "Failed to load profile.";
+            setErrorMessage(message);
         } finally {
             setLoading(false);
         }
@@ -80,11 +91,7 @@ export default function ProfilePage() {
                             <p className="text-sm text-gray-400">Full Name</p>
                             <p className="text-lg font-semibold">{profile.fullName || "Not set"}</p>
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditField("fullName")}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handleEditField("fullName")}>
                             Edit
                         </Button>
                     </div>
@@ -93,11 +100,7 @@ export default function ProfilePage() {
                             <p className="text-sm text-gray-400">Date of Birth</p>
                             <p className="text-lg font-semibold">{profile.dob || "Not set"}</p>
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditField("dob")}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handleEditField("dob")}>
                             Edit
                         </Button>
                     </div>
@@ -106,11 +109,7 @@ export default function ProfilePage() {
                             <p className="text-sm text-gray-400">Phone</p>
                             <p className="text-lg font-semibold">{profile.phone || "Not set"}</p>
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditField("phone")}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handleEditField("phone")}>
                             Edit
                         </Button>
                     </div>
@@ -119,22 +118,14 @@ export default function ProfilePage() {
                             <p className="text-sm text-gray-400">Address</p>
                             <p className="text-lg font-semibold">{profile.address || "Not set"}</p>
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditField("address")}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handleEditField("address")}>
                             Edit
                         </Button>
                     </div>
 
                     {/* Change Password */}
                     <div className="mt-6 flex justify-center">
-                        <Button
-                            variant="default"
-                            size="md"
-                            onClick={handleChangePassword}
-                        >
+                        <Button variant="default" size="md" onClick={handleChangePassword}>
                             🔒 Change Password
                         </Button>
                     </div>
