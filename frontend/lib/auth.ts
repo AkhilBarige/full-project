@@ -9,7 +9,7 @@ export const saveToken = (token: string): void => {
         localStorage.setItem(TOKEN_KEY, token);
 
         // Cookie (for middleware + server-side checks)
-        document.cookie = `${TOKEN_KEY}=${token}; path=/; secure; samesite=lax`;
+        document.cookie = `${TOKEN_KEY}=${token}; path=/; secure; SameSite=Lax`;
     }
 };
 
@@ -17,7 +17,9 @@ export const saveToken = (token: string): void => {
 export const getToken = (): string | null => {
     if (typeof window !== "undefined") {
         // Try cookie first
-        const match = document.cookie.match(new RegExp(`(^| )${TOKEN_KEY}=([^;]+)`));
+        const match = document.cookie.match(
+            new RegExp(`(^| )${TOKEN_KEY}=([^;]+)`)
+        );
         if (match) return match[2];
 
         // Fallback to localStorage
@@ -31,8 +33,8 @@ export const clearToken = (): void => {
     if (typeof window !== "undefined") {
         localStorage.removeItem(TOKEN_KEY);
 
-        // Expire cookie
-        document.cookie = `${TOKEN_KEY}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+        // Expire cookie (overwrite with same attributes)
+        document.cookie = `${TOKEN_KEY}=; path=/; secure; SameSite=Lax; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     }
 };
 
